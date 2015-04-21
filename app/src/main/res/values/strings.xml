@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">LG Vertretungsplan</string>
+
+    <string name="action_today">Heute</string>
+    <string name="action_tomorrow">Morgen</string>
+    <string name="action_signin">Anmelden</string>
+    <string name="action_signout">Abmelden</string>
+    <string name="action_settings">Einstellungen</string>
+
+    <string name="label_substituteTeacher">Vertretung:</string>
+    <string name="label_substituteSubject">Fach:</string>
+    <string name="label_room">Raum:</string>
+    <string name="label_replaces">Statt:</string>
+    <string name="label_text">Vertretungs-Text:</string>
+    <string name="text_info">Keine weiteren Informationen verfügbar</string>
+</resources>
