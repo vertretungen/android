@@ -20,19 +20,35 @@ import java.util.TimeZone;
  * Created by niklaskorz on 15.04.15.
  */
 public class Plan {
+    String userFullname;
     Date date;
     String dateString;
     Date lastUpdate;
     String lastUpdateString;
     ArrayList<PlanEntry> entries;
 
-    private Plan(Document document) {
+    public static class ParserException extends Exception {}
+
+    public Plan(String raw) throws ParserException {
+        Document document = Jsoup.parse(raw);
+
         loadMetadata(document);
         loadEntries(document);
     }
 
-    private void loadMetadata(Document document) {
+    private void loadMetadata(Document document) throws ParserException{
+        Element nameElement = document.getElementById("right");
+        if (nameElement == null) {
+            throw new ParserException();
+        }
+
+        userFullname = nameElement.text();
+
         Element dateElement = document.getElementById("date");
+        if (dateElement == null) {
+            throw new ParserException();
+        }
+
         dateString = dateElement.text();
         String[] components = dateString.split(" ");
         String[] dateComponents = components[components.length - 1].split("\\.");
@@ -47,6 +63,10 @@ public class Plan {
         date = calendar.getTime();
 
         Element lastUpdateElement = document.getElementById("stand");
+        if (lastUpdateElement == null) {
+            throw new ParserException();
+        }
+
         lastUpdateString = lastUpdateElement.text();
         components = lastUpdateString.split(" ");
         dateComponents = components[1].split("\\.");
@@ -63,8 +83,12 @@ public class Plan {
         lastUpdate = calendar.getTime();
     }
 
-    private void loadEntries(Document document) {
+    private void loadEntries(Document document) throws ParserException {
         Elements rows = document.select("#vertretungsplan tr");
+        // There has to be at least one row: the head row
+        if (rows.isEmpty()) {
+            throw new ParserException();
+        }
         Iterator<Element> rowIterator = rows.iterator();
         entries = new ArrayList<>();
 
@@ -75,9 +99,5 @@ public class Plan {
             Element row = rowIterator.next();
             entries.add(new PlanEntry(row));
         };
-    }
-
-    public static Plan parse(String source) {
-        return new Plan(Jsoup.parse(source));
     }
 }

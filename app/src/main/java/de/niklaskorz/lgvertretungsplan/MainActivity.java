@@ -34,6 +34,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
@@ -41,15 +42,18 @@ import com.nispok.snackbar.enums.SnackbarType;
 import org.apache.http.Header;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements PlanClient.ResponseHandler {
     Toolbar toolbar;
+    ProfileDrawerItem profileDrawerItem;
     AccountHeader.Result accountHeader;
     Drawer.Result drawer;
     PlanClient planClient;
+    LoginManager loginManager;
     SwipeRefreshLayout swipeRefreshLayout;
-    boolean isToday;
+    PlanClient.Type lastPlanType = PlanClient.Type.TODAY;
 
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
@@ -79,18 +83,18 @@ public class MainActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        profileDrawerItem = new ProfileDrawerItem();
+
         accountHeader = new AccountHeader()
                 .withActivity(this)
                 .withHeaderBackground(R.drawable.books)
                 .withProfileImagesVisible(false)
                 .withSelectionListEnabledForSingleProfile(false)
-                .addProfiles(
-                        new ProfileDrawerItem().withName("Niklas Korz").withEmail("niko335")
-                )
+                .addProfiles(profileDrawerItem)
                 .withSavedInstance(savedInstanceState)
                 .build();
 
-
+        final PlanClient.ResponseHandler rh = this;
         drawer = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -107,9 +111,13 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
                         if (iDrawerItem.getIdentifier() == ACTION_TODAY) {
-                            loadToday();
+                            loadPlan(PlanClient.Type.TODAY);
                         } else if (iDrawerItem.getIdentifier() == ACTION_TOMORROW) {
-                            loadTomorrow();
+                            loadPlan(PlanClient.Type.TOMORROW);
+                        } else if (iDrawerItem.getIdentifier() == ACTION_SIGNOUT) {
+                            loginManager.logout();
+                            recyclerView.setAdapter(null);
+                            loginManager.login(lastPlanType, rh);
                         }
 
                     }
@@ -121,11 +129,7 @@ public class MainActivity extends ActionBarActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (isToday) {
-                    loadToday();
-                } else {
-                    loadTomorrow();
-                }
+                loadPlan(lastPlanType);
             }
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.green, R.color.blue);
@@ -136,94 +140,41 @@ public class MainActivity extends ActionBarActivity {
         recyclerView.setLayoutManager(layoutManager);
         planClient = new PlanClient(this);
 
-        LoginManager loginManager = new LoginManager(this);
-        loginManager.showDialog();
-
-        /*SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        String auth = settings.getString("auth", null);
-        if (auth != null) {
-
-        }*/
+        swipeRefreshLayout.setRefreshing(true);
+        loginManager = new LoginManager(this, planClient);
+        loginManager.login(lastPlanType, this);
     }
 
-    public void loadToday() {
-        isToday = true;
+    public void loadPlan(final PlanClient.Type type) {
+        lastPlanType = type;
         swipeRefreshLayout.setRefreshing(true);
-        final Context context = this;
-        planClient.login("niko335", "yourdesignsucks", new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                planClient.getToday(new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        swipeRefreshLayout.setRefreshing(false);
-                        try {
-                            Plan p = Plan.parse(new String(responseBody, "UTF-8"));
-                            adapter = new PlanAdapter(layoutManager, p);
-                            recyclerView.setAdapter(adapter);
-                            SnackbarManager.show(Snackbar
-                                    .with(context)
-                                    .text(p.dateString)
-                                    .duration(Snackbar.SnackbarDuration.LENGTH_LONG));
-                        } catch (UnsupportedEncodingException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        swipeRefreshLayout.setRefreshing(false);
-                        error.printStackTrace();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                swipeRefreshLayout.setRefreshing(false);
-                error.printStackTrace();
-            }
-        });
+        planClient.get(type, this);
     }
 
-    public void loadTomorrow() {
-        isToday = false;
-        swipeRefreshLayout.setRefreshing(true);
-        final Context context = this;
-        planClient.login("niko335", "yourdesignsucks", new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                planClient.getTomorrow(new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        swipeRefreshLayout.setRefreshing(false);
-                        try {
-                            Plan p = Plan.parse(new String(responseBody, "UTF-8"));
-                            adapter = new PlanAdapter(layoutManager, p);
-                            recyclerView.setAdapter(adapter);
-                            SnackbarManager.show(Snackbar
-                                    .with(context)
-                                    .text(p.dateString)
-                                    .duration(Snackbar.SnackbarDuration.LENGTH_LONG));
-                        } catch (UnsupportedEncodingException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
+    @Override
+    public void onSuccess(Plan p) {
+        profileDrawerItem.setEmail(loginManager.getUsername());
+        profileDrawerItem.setName(loginManager.getUserFullname());
+        accountHeader.removeProfile(0);
+        accountHeader.addProfile(profileDrawerItem, 0);
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        swipeRefreshLayout.setRefreshing(false);
-                        error.printStackTrace();
-                    }
-                });
-            }
+        swipeRefreshLayout.setRefreshing(false);
+        adapter = new PlanAdapter(layoutManager, p);
+        recyclerView.setAdapter(adapter);
+        SnackbarManager.show(Snackbar
+                .with(this)
+                .text(p.dateString)
+                .duration(Snackbar.SnackbarDuration.LENGTH_LONG));
+    }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                swipeRefreshLayout.setRefreshing(false);
-                error.printStackTrace();
-            }
-        });
+    @Override
+    public void onFailure(Throwable error) {
+        swipeRefreshLayout.setRefreshing(false);
+        error.printStackTrace();
+        SnackbarManager.show(Snackbar
+                .with(this)
+                .text(error.getLocalizedMessage())
+                .duration(Snackbar.SnackbarDuration.LENGTH_INDEFINITE));
     }
 
     /*@Override

@@ -21,8 +21,11 @@ public class PlanEntry {
     String text; // Vertretungs-Text
     String replaces; // Statt
 
-    public PlanEntry(Element element) {
+    public PlanEntry(Element element) throws Plan.ParserException{
         Elements columns = element.select("td");
+        if (columns.size() < 9) {
+            throw new Plan.ParserException();
+        }
         classes = PlanEntry.trim(columns.get(0).text());
         hours = PlanEntry.trim(columns.get(1).text());
         subject = PlanEntry.trim(columns.get(2).text());
