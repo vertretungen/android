@@ -38,6 +38,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
+import com.nispok.snackbar.listeners.ActionClickListener;
 
 import org.apache.http.Header;
 
@@ -101,8 +102,8 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
                 .withActionBarDrawerToggleAnimated(true)
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_today)).withIdentifier(ACTION_TODAY),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_tomorrow)).withIdentifier(ACTION_TOMORROW),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_today)).withCheckable(false).withIdentifier(ACTION_TODAY),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_tomorrow)).withCheckable(false).withIdentifier(ACTION_TOMORROW),
                         new DividerDrawerItem(),
                         //new SecondaryDrawerItem().withName("Einstellungen"),
                         new SecondaryDrawerItem().withName(getResources().getString(R.string.action_signout)).withCheckable(false).withIdentifier(ACTION_SIGNOUT)
@@ -165,15 +166,34 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
                 .with(this)
                 .text(p.dateString)
                 .duration(Snackbar.SnackbarDuration.LENGTH_LONG));
+
+        if (lastPlanType == PlanClient.Type.TODAY) {
+            drawer.setSelectionByIdentifier(ACTION_TODAY, false);
+        } else if (lastPlanType == PlanClient.Type.TOMORROW) {
+            drawer.setSelectionByIdentifier(ACTION_TOMORROW, false);
+        }
     }
 
     @Override
-    public void onFailure(Throwable error) {
+    public void onFailure(final Throwable error) {
+        final Context context = this;
+
         swipeRefreshLayout.setRefreshing(false);
         error.printStackTrace();
         SnackbarManager.show(Snackbar
                 .with(this)
-                .text(error.getLocalizedMessage())
+                .text("Vertretungsplan konnte nicht geladen werden")
+                .actionLabel("Info")
+                .actionListener(new ActionClickListener() {
+                    @Override
+                    public void onActionClicked(Snackbar snackbar) {
+                        new MaterialDialog.Builder(context)
+                                .title("Something went wrong")
+                                .content(error.getLocalizedMessage())
+                                .positiveText("Close")
+                                .show();
+                    }
+                })
                 .duration(Snackbar.SnackbarDuration.LENGTH_INDEFINITE));
     }
 
