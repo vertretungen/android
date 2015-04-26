@@ -12,4 +12,8 @@
     <color name="red">#f44336</color>
     <color name="green">#4caf50</color>
     <color name="blue">#03a9f4</color>
+
+    <color name="lgBlue">#323A8F</color>
+    <color name="lgOrange">#F28D20</color>
+    <color name="lgGreen">#92C020</color>
 </resources>
