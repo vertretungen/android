@@ -13,7 +13,7 @@ android {
         def (fullVersionTag, versionBuild, gitSha) = longVersionName.tokenize('-')
         def (versionMajor, versionMinor, versionPatch) = fullVersionTag.tokenize('.')
 
-        versionName "$versionMajor.$versionMinor.$versionPatch.versionBuild:$gitSha"
+        versionName "$versionMajor.$versionMinor.$versionPatch.$versionBuild:$gitSha"
         versionCode versionMajor.toInteger() * 100000 +
                 versionMinor.toInteger() * 10000 +
                 versionPatch.toInteger() * 1000 +
