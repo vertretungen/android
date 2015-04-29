@@ -1,0 +1,55 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="username"
+        android:title=""/>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_plan">
+        <ListPreference
+            android:key="class"
+            android:title="@string/pref_title_class"
+            android:entries="@array/pref_class_titles"
+            android:entryValues="@array/pref_class_values"
+            android:defaultValue="0"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
+        <CheckBoxPreference
+            android:key="filter_courses"
+            android:title="@string/pref_title_filter_courses"
+            android:summary="@string/pref_description_filter_courses"
+            android:defaultValue="false" />
+
+        <EditTextPreference
+            android:dependency="filter_courses"
+            android:key="courses"
+            android:title="@string/pref_title_courses"
+            android:defaultValue="@string/pref_description_courses"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:maxLines="1"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_updates">
+
+        <Preference
+            android:key="search_updates"
+            android:title="Nach Aktualisierung suchen…"/>
+
+        <Preference
+            android:key="last_update_search"
+            android:title="Letzter Suchlauf"/>
+
+        <Preference
+            android:key="last_update"
+            android:title="Letzte Aktualisierung"/>
+
+        <Preference
+            android:key="version"
+            android:title="Version"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

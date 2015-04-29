@@ -47,4 +47,5 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.google.android.gms:play-services:7.0.0'
     compile 'com.afollestad:material-dialogs:0.7.2.4'
+    compile 'com.android.support:support-v4:22.0.0'
 }

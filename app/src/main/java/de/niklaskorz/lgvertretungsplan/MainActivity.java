@@ -62,8 +62,6 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
 
     public static final int ACTION_TODAY = 0;
     public static final int ACTION_TOMORROW = 1;
-    public static final int ACTION_SIGNOUT = 2;
-    public static final int ACTION_SETTINGS = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +93,6 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
                 .withSavedInstance(savedInstanceState)
                 .build();
 
-        final PlanClient.ResponseHandler rh = this;
         drawer = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -103,10 +100,7 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.action_today)).withCheckable(false).withIdentifier(ACTION_TODAY),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_tomorrow)).withCheckable(false).withIdentifier(ACTION_TOMORROW),
-                        new DividerDrawerItem(),
-                        //new SecondaryDrawerItem().withName("Einstellungen"),
-                        new SecondaryDrawerItem().withName(getResources().getString(R.string.action_signout)).withCheckable(false).withIdentifier(ACTION_SIGNOUT)
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_tomorrow)).withCheckable(false).withIdentifier(ACTION_TOMORROW)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -115,10 +109,6 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
                             loadPlan(PlanClient.Type.TODAY);
                         } else if (iDrawerItem.getIdentifier() == ACTION_TOMORROW) {
                             loadPlan(PlanClient.Type.TOMORROW);
-                        } else if (iDrawerItem.getIdentifier() == ACTION_SIGNOUT) {
-                            loginManager.logout();
-                            recyclerView.setAdapter(null);
-                            loginManager.login(lastPlanType, rh);
                         }
 
                     }
@@ -197,12 +187,12 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
                 .duration(Snackbar.SnackbarDuration.LENGTH_INDEFINITE));
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }*/
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -213,7 +203,15 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            intent.putExtra("username", loginManager.getUsername());
+            intent.putExtra("fullname", loginManager.getUserFullname());
+            startActivity(intent);
             return true;
+        } else if (id == R.id.action_signout) {
+            loginManager.logout();
+            recyclerView.setAdapter(null);
+            loginManager.login(lastPlanType, this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -221,7 +219,6 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState = drawer.saveInstanceState(outState);
         outState = drawer.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }

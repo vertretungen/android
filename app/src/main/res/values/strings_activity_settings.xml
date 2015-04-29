@@ -1,0 +1,44 @@
+<resources>
+    <string name="title_activity_settings">Einstellungen</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_header_general">Allgemein</string>
+
+    <string name="pref_header_plan">Vertretungsplan</string>
+
+    <string name="pref_title_filter_courses">Nach Kursen filtern</string>
+    <string name="pref_description_filter_courses">Nur die von dir festgelegten Kurse werden angezeigt</string>
+    <string name="pref_title_courses">Kurse</string>
+    <string name="pref_description_courses">Deine Kurse</string>
+
+    <string name="pref_title_class">Klassenstufe</string>
+    <string-array name="pref_class_titles">
+        <item>Keine</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>MSS11</item>
+        <item>MSS12</item>
+        <item>MSS13</item>
+    </string-array>
+    <string-array name="pref_class_values">
+        <item>0</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
+
+    <string name="pref_header_updates">Aktualisierungen</string>
+
+    <string name="snack_version_copied">Versionsnummer wurde kopiert</string>
+</resources>
