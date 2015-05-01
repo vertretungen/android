@@ -2,55 +2,28 @@ package de.niklaskorz.lgvertretungsplan;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.os.Build;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.SpinnerAdapter;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.mikepenz.google_material_typeface_library.GoogleMaterial;
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.accountswitcher.AccountHeader;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
-import org.apache.http.Header;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 
 
 public class MainActivity extends ActionBarActivity implements PlanClient.ResponseHandler {
     Toolbar toolbar;
-    ProfileDrawerItem profileDrawerItem;
-    AccountHeader.Result accountHeader;
-    Drawer.Result drawer;
     PlanClient planClient;
     LoginManager loginManager;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -59,9 +32,6 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     LinearLayoutManager layoutManager;
-
-    public static final int ACTION_TODAY = 0;
-    public static final int ACTION_TOMORROW = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,42 +49,8 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-        profileDrawerItem = new ProfileDrawerItem();
-
-        accountHeader = new AccountHeader()
-                .withActivity(this)
-                .withHeaderBackground(R.drawable.books)
-                .withProfileImagesVisible(false)
-                .withSelectionListEnabledForSingleProfile(false)
-                .addProfiles(profileDrawerItem)
-                .withSavedInstance(savedInstanceState)
-                .build();
-
-        drawer = new Drawer()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withActionBarDrawerToggleAnimated(true)
-                .withAccountHeader(accountHeader)
-                .addDrawerItems(
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_today)).withCheckable(false).withIdentifier(ACTION_TODAY),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.action_tomorrow)).withCheckable(false).withIdentifier(ACTION_TOMORROW)
-                )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l, IDrawerItem iDrawerItem) {
-                        if (iDrawerItem.getIdentifier() == ACTION_TODAY) {
-                            loadPlan(PlanClient.Type.TODAY);
-                        } else if (iDrawerItem.getIdentifier() == ACTION_TOMORROW) {
-                            loadPlan(PlanClient.Type.TOMORROW);
-                        }
-
-                    }
-                })
-                .withSavedInstance(savedInstanceState)
-                .build();
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setHomeButtonEnabled(true);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -144,24 +80,16 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
 
     @Override
     public void onSuccess(Plan p) {
-        profileDrawerItem.setEmail(loginManager.getUsername());
-        profileDrawerItem.setName(loginManager.getUserFullname());
-        accountHeader.removeProfile(0);
-        accountHeader.addProfile(profileDrawerItem, 0);
-
         swipeRefreshLayout.setRefreshing(false);
         adapter = new PlanAdapter(layoutManager, p);
         recyclerView.setAdapter(adapter);
         SnackbarManager.show(Snackbar
                 .with(this)
-                .text(p.dateString)
+                .text(p.lastUpdateString)
                 .duration(Snackbar.SnackbarDuration.LENGTH_LONG));
 
-        if (lastPlanType == PlanClient.Type.TODAY) {
-            drawer.setSelectionByIdentifier(ACTION_TODAY, false);
-        } else if (lastPlanType == PlanClient.Type.TOMORROW) {
-            drawer.setSelectionByIdentifier(ACTION_TOMORROW, false);
-        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy");
+        setTitle(dateFormat.format(p.date));
     }
 
     @Override
@@ -212,6 +140,10 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
             loginManager.logout();
             recyclerView.setAdapter(null);
             loginManager.login(lastPlanType, this);
+        } else if (id == R.id.action_today) {
+            loadPlan(PlanClient.Type.TODAY);
+        } else if (id == R.id.action_tomorrow) {
+            loadPlan(PlanClient.Type.TOMORROW);
         }
 
         return super.onOptionsItemSelected(item);
@@ -219,16 +151,11 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState = drawer.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onBackPressed() {
-        if (drawer != null && drawer.isDrawerOpen()) {
-            drawer.closeDrawer();
-        } else {
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 }

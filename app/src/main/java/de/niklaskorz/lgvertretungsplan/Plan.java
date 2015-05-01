@@ -54,7 +54,7 @@ public class Plan {
         String[] dateComponents = components[components.length - 1].split("\\.");
 
         int day = Integer.parseInt(dateComponents[0]);
-        int month = Integer.parseInt(dateComponents[1]);
+        int month = Integer.parseInt(dateComponents[1]) - 1;
         int year = Integer.parseInt(dateComponents[2]);
 
         Calendar calendar = GregorianCalendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
