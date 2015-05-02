@@ -15,7 +15,7 @@
         android:minHeight="?attr/actionBarSize"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:elevation="4dp"/>
+        android:elevation="2dp"/>
 
     <fragment
         android:name="de.niklaskorz.lgvertretungsplan.SettingsActivity$GeneralPreferenceFragment"

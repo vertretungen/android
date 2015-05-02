@@ -12,6 +12,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -35,6 +37,7 @@ import android.support.v7.widget.Toolbar;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -159,13 +162,18 @@ public class SettingsActivity extends ActionBarActivity {
      * activity is showing a two-pane settings UI.
      */
     public static class GeneralPreferenceFragment extends PreferenceFragment {
+        Preference searchUpdatesPreference;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
 
-            bindPreferenceSummaryToValue(findPreference("courses"));
+            //bindPreferenceSummaryToValue(findPreference("courses"));
             bindPreferenceSummaryToValue(findPreference("class"));
+
+            updateLastUpdateSearch();
+            updateLastUpdate();
 
             Preference versionPref = (Preference) findPreference("version");
             try {
@@ -188,6 +196,51 @@ public class SettingsActivity extends ActionBarActivity {
                 });
             } catch (PackageManager.NameNotFoundException ex) {
                 ex.printStackTrace();
+            }
+
+            searchUpdatesPreference = findPreference("search_updates");
+            searchUpdatesPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    searchUpdatesPreference.setSummary(R.string.searching_for_updates);
+                    VersionManager.getInstance().check(getActivity(), new VersionManager.CompletionHandler() {
+                        @Override
+                        public void complete(final boolean updateAvailable) {
+                            if (updateAvailable) {
+                                searchUpdatesPreference.setSummary(R.string.updates_available);
+                            } else {
+                                searchUpdatesPreference.setSummary(R.string.no_updates_available);
+                            }
+                            updateLastUpdateSearch();
+                        }
+
+                        @Override
+                        public void error(Throwable error) {
+                            searchUpdatesPreference.setSummary(R.string.no_updates_available);
+                            SnackbarManager.show(Snackbar
+                                    .with(getActivity())
+                                    .text(error.getLocalizedMessage())
+                                    .duration(Snackbar.SnackbarDuration.LENGTH_INDEFINITE));
+                        }
+                    });
+                    return true;
+                }
+            });
+        }
+
+        private void updateLastUpdateSearch() {
+            long lastUpdateSearchTimestamp = getPreferenceManager().getSharedPreferences().getLong("last_update_search", 0);
+            Preference lastUpdateSearchPreference = findPreference("last_update_search");
+            if (lastUpdateSearchTimestamp != 0) {
+                lastUpdateSearchPreference.setSummary(new Date(lastUpdateSearchTimestamp).toString());
+            }
+        }
+
+        private void updateLastUpdate() {
+            long lastUpdateTimestamp = getPreferenceManager().getSharedPreferences().getLong("last_update", 0);
+            Preference lastUpdatePreference = findPreference("last_update");
+            if (lastUpdateTimestamp != 0) {
+                lastUpdatePreference.setSummary(new Date(lastUpdateTimestamp).toString());
             }
         }
 

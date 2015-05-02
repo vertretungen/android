@@ -2,6 +2,11 @@ package de.niklaskorz.lgvertretungsplan;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,7 +24,9 @@ import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class MainActivity extends ActionBarActivity implements PlanClient.ResponseHandler {
@@ -37,6 +44,8 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        checkVersionChange();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -72,7 +81,33 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
         loginManager.login(lastPlanType, this);
     }
 
-    public void loadPlan(final PlanClient.Type type) {
+    private void checkVersionChange() {
+        int currentVersion = 0;
+        try {
+            currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+        } catch (PackageManager.NameNotFoundException ex) {
+            ex.printStackTrace();
+            finish();
+        }
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastVersion = settings.getInt("version_code", 0);
+
+        if (lastVersion != currentVersion) {
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putInt("version_code", currentVersion);
+            try {
+                ApplicationInfo appInfo = getPackageManager().getApplicationInfo(getPackageName(), 0);
+                File appFile = new File(appInfo.sourceDir);
+                editor.putLong("last_update", appFile.lastModified());
+            } catch (PackageManager.NameNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            editor.apply();
+        }
+    }
+
+    private void loadPlan(final PlanClient.Type type) {
         lastPlanType = type;
         swipeRefreshLayout.setRefreshing(true);
         planClient.get(type, this);

@@ -15,7 +15,7 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null" />
 
-        <CheckBoxPreference
+        <!--<CheckBoxPreference
             android:key="filter_courses"
             android:title="@string/pref_title_filter_courses"
             android:summary="@string/pref_description_filter_courses"
@@ -28,7 +28,7 @@
             android:defaultValue="@string/pref_description_courses"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:maxLines="1"/>
+            android:maxLines="1"/>-->
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -36,11 +36,13 @@
 
         <Preference
             android:key="search_updates"
-            android:title="Nach Aktualisierung suchen…"/>
+            android:title="@string/pref_search_updates_title"
+            android:summary="@string/pref_search_updates_summary"/>
 
         <Preference
             android:key="last_update_search"
-            android:title="Letzter Suchlauf"/>
+            android:title="Letzter Suchlauf"
+            android:summary="@string/updates_never_searched"/>
 
         <Preference
             android:key="last_update"

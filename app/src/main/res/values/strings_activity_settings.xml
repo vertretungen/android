@@ -14,7 +14,7 @@
 
     <string name="pref_title_class">Klassenstufe</string>
     <string-array name="pref_class_titles">
-        <item>Keine</item>
+        <item>Alle</item>
         <item>5</item>
         <item>6</item>
         <item>7</item>
@@ -38,7 +38,21 @@
         <item>13</item>
     </string-array>
 
-    <string name="pref_header_updates">Aktualisierungen</string>
+    <string name="pref_header_updates">Updates</string>
+    <string name="pref_search_updates_title">Nach Updates suchen</string>
+    <string name="pref_search_updates_summary">Anklicken, um nach neuen Updates zu suchen</string>
+
+    <string name="updates_never_searched">Noch wurde nach keinen Updates gesucht</string>
+
+    <string name="searching_for_updates">Suche nach Updates...</string>
+    <string name="updates_available">Updates verfügbar</string>
+    <string name="no_updates_available">Keine Updates gefunden</string>
+    <string name="update_loaded">Update kann jetzt installiert werden</string>
+
+    <string name="download_update">Herunterladen</string>
+    <string name="install_update">Installieren</string>
+    <string name="postpone_update">Später</string>
+    <string name="update_dialog_text">Ein neues Update ist verfügbar und kann jetzt heruntergeladen werden.\nÄnderungen:</string>
 
     <string name="snack_version_copied">Versionsnummer wurde kopiert</string>
 </resources>

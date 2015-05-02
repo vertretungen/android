@@ -2,6 +2,7 @@ package de.niklaskorz.lgvertretungsplan;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,6 @@ import butterknife.InjectView;
  * Created by niklaskorz on 21.04.15.
  */
 public class LoginManager implements View.OnClickListener, PlanClient.ResponseHandler {
-    private static final String PREFS_NAME = "auth";
-
     private Context context;
     private SharedPreferences settings;
     private PlanClient planClient;
@@ -47,7 +46,7 @@ public class LoginManager implements View.OnClickListener, PlanClient.ResponseHa
 
     public LoginManager(Context c, PlanClient p) {
         context = c;
-        settings = context.getSharedPreferences(PREFS_NAME, 0);
+        settings = PreferenceManager.getDefaultSharedPreferences(context);
         planClient = p;
     }
 

@@ -9,4 +9,10 @@
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_signout" android:title="@string/action_signout"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_submenu" android:title="Klassen" android:orderInCategory="100" app:showAsAction="never">
+        <menu>
+            <item android:title="First"/>
+            <item android:title="Second"/>
+        </menu>
+    </item>
 </menu>

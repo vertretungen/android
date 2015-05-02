@@ -15,4 +15,7 @@
     <string name="text_info">Keine weiteren Informationen verfügbar</string>
 
     <string name="error_login">Login Fehlgeschlagen (Nutzernamen und Passwort überprüfen)</string>
+    <string name="title_activity_update">UpdateActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>

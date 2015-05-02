@@ -1,4 +1,42 @@
+import groovy.json.JsonBuilder
+
 apply plugin: 'com.android.application'
+
+class Version {
+    String longVersionName, fullVersionTag
+    String major, minor, patch, buildNumber, commit
+    String changes
+
+    Version(File dir) {
+        longVersionName = "git -C $dir describe --tags --long".execute().text.trim()
+        (fullVersionTag, buildNumber, commit) = longVersionName.tokenize('-')
+        (major, minor, patch) = fullVersionTag.tokenize('.')
+
+        changes = ["git", "-C", dir, "log", "$fullVersionTag..HEAD", "--pretty=format:- %s"].execute().text.trim()
+    }
+
+    String toString() {
+        "$major.$minor.$patch ($buildNumber:$commit)"
+    }
+
+    int toInteger() {
+        major.toInteger() * 100000 + minor.toInteger() * 10000 +  patch.toInteger() * 1000 +  buildNumber.toInteger()
+    }
+
+    void writeVersion(File file) {
+        file.text = this.toInteger()
+    }
+
+    void writeInfo(File file) {
+        def json = new JsonBuilder()
+        json {
+            version this.toString()
+            description changes
+        }
+
+        file.text = json.toString()
+    }
+}
 
 android {
     compileSdkVersion 21
@@ -9,17 +47,21 @@ android {
         minSdkVersion 16
         targetSdkVersion 21
 
-        def longVersionName = "git -C ${rootDir} describe --tags --long".execute().text.trim()
-        def (fullVersionTag, versionBuild, gitSha) = longVersionName.tokenize('-')
-        def (versionMajor, versionMinor, versionPatch) = fullVersionTag.tokenize('.')
+        def version = new Version(rootDir)
+        versionName version.toString()
+        versionCode version.toInteger()
 
-        versionName "$versionMajor.$versionMinor.$versionPatch.$versionBuild:$gitSha"
-        versionCode versionMajor.toInteger() * 100000 +
-                versionMinor.toInteger() * 10000 +
-                versionPatch.toInteger() * 1000 +
-                versionBuild.toInteger()
+        printf("\n------- VERSION DATA -------\n- CODE: " + versionCode + "\n" +
+                "- NAME: " + versionName + "\n----------------------------\n")
+
+        version.writeVersion file('version.txt')
+        version.writeInfo file(version.toInteger() + '.json')
     }
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix " DEBUG"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
