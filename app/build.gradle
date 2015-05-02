@@ -54,8 +54,9 @@ android {
         printf("\n------- VERSION DATA -------\n- CODE: " + versionCode + "\n" +
                 "- NAME: " + versionName + "\n----------------------------\n")
 
-        version.writeVersion file('version.txt')
-        version.writeInfo file(version.toInteger() + '.json')
+        mkdir "$rootDir/versions"
+        version.writeVersion file("$rootDir/versions/version.txt")
+        version.writeInfo file("$rootDir/versions/${version.toInteger()}.json")
     }
     buildTypes {
         debug {
