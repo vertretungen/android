@@ -162,8 +162,6 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
 
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            intent.putExtra("username", loginManager.getUsername());
-            intent.putExtra("fullname", loginManager.getUserFullname());
             startActivity(intent);
 
             selectedClass = PreferenceManager.getDefaultSharedPreferences(this).getString("class", "0");
