@@ -1,11 +1,14 @@
 <resources>
     <string name="app_name">LG Vertretungsplan</string>
 
+    <string name="action_day">Tag</string>
     <string name="action_today">Heute</string>
     <string name="action_tomorrow">Morgen</string>
     <string name="action_signin">Anmelden</string>
     <string name="action_signout">Abmelden</string>
     <string name="action_settings">Einstellungen</string>
+    <string name="action_classes">Klassen</string>
+    <string name="action_all_classes">Alle</string>
 
     <string name="label_substituteTeacher">Vertretung:</string>
     <string name="label_substituteSubject">Fach:</string>
@@ -17,5 +20,5 @@
     <string name="error_login">Login Fehlgeschlagen (Nutzernamen und Passwort überprüfen)</string>
     <string name="title_activity_update">UpdateActivity</string>
 
-    <string name="hello_world">Hello world!</string>
+
 </resources>

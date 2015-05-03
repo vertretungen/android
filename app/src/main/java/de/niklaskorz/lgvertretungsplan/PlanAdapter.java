@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -18,6 +20,7 @@ import butterknife.OnClick;
  */
 public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> implements View.OnClickListener {
     Plan plan;
+    ArrayList<PlanEntry> entries;
     LinearLayoutManager layoutManager;
     int expandedPosition = -1;
 
@@ -141,9 +144,10 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
         }
     }
 
-    public PlanAdapter(LinearLayoutManager lm, Plan p) {
+    public PlanAdapter(LinearLayoutManager lm, Plan p, String filterClass) {
         layoutManager = lm;
         plan = p;
+        setClassFilter(filterClass);
     }
 
     @Override
@@ -156,7 +160,7 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.update(plan.entries.get(position));
+        holder.update(entries.get(position));
 
         if (position == expandedPosition) {
             holder.expand();
@@ -167,7 +171,7 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
 
     @Override
     public int getItemCount() {
-        return plan.entries.size();
+        return entries.size();
     }
 
     @Override
@@ -186,5 +190,20 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
             layoutManager.scrollToPositionWithOffset(holder.getLayoutPosition(), 0);
             notifyItemChanged(expandedPosition);
         }
+    }
+
+    public void setClassFilter(String filterClass) {
+        if (filterClass.equals("0")) {
+            entries = plan.entries;
+        } else {
+            entries = new ArrayList<>();
+            for (PlanEntry entry : plan.entries) {
+                if (entry.classes.startsWith(filterClass)) {
+                    entries.add(entry);
+                }
+            }
+        }
+
+        notifyDataSetChanged();
     }
 }

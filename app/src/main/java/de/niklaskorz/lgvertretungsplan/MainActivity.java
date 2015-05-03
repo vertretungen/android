@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.nispok.snackbar.Snackbar;
@@ -22,6 +23,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 
 public class MainActivity extends BaseActivity implements PlanClient.ResponseHandler {
@@ -32,8 +34,10 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
     PlanClient.Type lastPlanType = PlanClient.Type.TODAY;
 
     RecyclerView recyclerView;
-    RecyclerView.Adapter adapter;
+    PlanAdapter adapter;
     LinearLayoutManager layoutManager;
+
+    String selectedClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,8 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
                 swipeRefreshLayout.setRefreshing(true);
             }
         });
+
+        selectedClass = PreferenceManager.getDefaultSharedPreferences(this).getString("class", "0");
 
         loginManager = new LoginManager(this, planClient);
         loginManager.login(lastPlanType, this);
@@ -110,14 +116,14 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
     @Override
     public void onSuccess(Plan p) {
         swipeRefreshLayout.setRefreshing(false);
-        adapter = new PlanAdapter(layoutManager, p);
+        adapter = new PlanAdapter(layoutManager, p, selectedClass);
         recyclerView.setAdapter(adapter);
         SnackbarManager.show(Snackbar
                 .with(this)
                 .text(p.lastUpdateString)
                 .duration(Snackbar.SnackbarDuration.LENGTH_LONG));
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy", Locale.getDefault());
         setTitle(dateFormat.format(p.date));
     }
 
@@ -146,24 +152,25 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             intent.putExtra("username", loginManager.getUsername());
             intent.putExtra("fullname", loginManager.getUserFullname());
             startActivity(intent);
+
+            selectedClass = PreferenceManager.getDefaultSharedPreferences(this).getString("class", "0");
+            if (adapter != null) {
+                adapter.setClassFilter(selectedClass);
+            }
+
             return true;
         } else if (id == R.id.action_signout) {
             loginManager.logout();
@@ -173,6 +180,21 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
             loadPlan(PlanClient.Type.TODAY);
         } else if (id == R.id.action_tomorrow) {
             loadPlan(PlanClient.Type.TOMORROW);
+        } else if (id == R.id.action_classes) {
+            new MaterialDialog.Builder(this)
+                    .title(R.string.action_classes)
+                    .items(R.array.pref_class_titles)
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                            String[] classValues = getResources().getStringArray(R.array.pref_class_values);
+                            selectedClass = classValues[i];
+                            if (adapter != null) {
+                                adapter.setClassFilter(selectedClass);
+                            }
+                        }
+                    })
+                    .show();
         }
 
         return super.onOptionsItemSelected(item);
