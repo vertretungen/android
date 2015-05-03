@@ -4,20 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-import android.os.Build;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.nispok.snackbar.Snackbar;
@@ -26,10 +21,9 @@ import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
-public class MainActivity extends ActionBarActivity implements PlanClient.ResponseHandler {
+public class MainActivity extends BaseActivity implements PlanClient.ResponseHandler {
     Toolbar toolbar;
     PlanClient planClient;
     LoginManager loginManager;
@@ -46,14 +40,6 @@ public class MainActivity extends ActionBarActivity implements PlanClient.Respon
         setContentView(R.layout.activity_main);
 
         checkVersionChange();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(getResources().getColor(R.color.primaryDark));
-            window.setNavigationBarColor(getResources().getColor(R.color.primaryDark));
-        }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

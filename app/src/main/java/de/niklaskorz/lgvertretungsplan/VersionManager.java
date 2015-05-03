@@ -1,7 +1,9 @@
 package de.niklaskorz.lgvertretungsplan;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.app.DownloadManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -30,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -103,7 +106,7 @@ public class VersionManager {
                                 }
                                 return;
                             }
-                            showAvailableNotification(c, versionInfo);
+                            showAvailable(c, versionInfo);
 
                             if (ch != null) {
                                 ch.complete(true);
@@ -131,7 +134,7 @@ public class VersionManager {
 
     public void loadUpdate(Context c, int version) {
         NotificationManager notificationManager = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(0);
+        notificationManager.cancel(NotificationIds.UPDATE_AVAILABLE_OR_INSTALLABLE);
 
         Uri uri = Uri.parse("http://dev.niklaskorz.de/lgv/versions/" + version + ".apk");
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
@@ -151,12 +154,12 @@ public class VersionManager {
                 }
 
                 context.unregisterReceiver(this);
-                showInstallableNotification(context, fileUri);
+                showInstallable(context, fileUri);
             }
         }, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
-    private void showAvailableNotification(Context c, VersionInfo info) {
+    private void showAvailable(Context c, VersionInfo info) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(c)
                 .setSmallIcon(c.getApplicationInfo().icon)
                 .setContentTitle(c.getString(R.string.app_name))
@@ -175,17 +178,21 @@ public class VersionManager {
         builder.setContentIntent(resultPendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, builder.build());
+        notificationManager.notify(NotificationIds.UPDATE_AVAILABLE_OR_INSTALLABLE, builder.build());
+
+        if (AppState.isActive()) {
+            c.startActivity(updateIntent);
+        }
     }
 
-    private void showInstallableNotification(Context c, Uri fileUri) {
+    private void showInstallable(Context c, Uri fileUri) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(c)
                 .setSmallIcon(c.getApplicationInfo().icon)
                 .setContentTitle(c.getString(R.string.app_name))
                 .setContentText(c.getString(R.string.update_loaded))
                 .setAutoCancel(true);
 
-        Intent installerIntent = new Intent(Intent.ACTION_VIEW);
+        final Intent installerIntent = new Intent(Intent.ACTION_VIEW);
         installerIntent.setDataAndType(fileUri, "application/vnd.android.package-archive");
         installerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -196,7 +203,32 @@ public class VersionManager {
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(resultPendingIntent);
 
-        NotificationManager notificationManager = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0, builder.build());
+        final NotificationManager notificationManager = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        final Notification notification = builder.build();
+        notificationManager.notify(NotificationIds.UPDATE_AVAILABLE_OR_INSTALLABLE, notification);
+
+        if (true) {
+            final Context activeContext = AppState.getActiveActivity();
+            new MaterialDialog.Builder(activeContext)
+                    .title(R.string.app_name)
+                    .content(R.string.update_loaded)
+                    .cancelable(false)
+                    .positiveText(R.string.install_update)
+                    .negativeText(R.string.postpone_update)
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            activeContext.startActivity(installerIntent);
+                        }
+
+                        @Override
+                        public void onNegative(MaterialDialog dialog) {
+                            super.onNegative(dialog);
+                            notificationManager.notify(NotificationIds.UPDATE_AVAILABLE_OR_INSTALLABLE, notification);
+                        }
+                    })
+                    .show();
+        }
     }
 }
