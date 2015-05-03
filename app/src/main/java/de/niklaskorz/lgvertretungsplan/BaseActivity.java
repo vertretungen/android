@@ -28,8 +28,7 @@ public class BaseActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        AppState.activityResumed();
-        AppState.setActiveActivity(this);
+        AppState.activityResumed(this);
     }
 
     @Override

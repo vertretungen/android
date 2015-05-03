@@ -25,16 +25,13 @@ public class AppState {
         return activeActivity;
     }
 
-    public static void setActiveActivity(Activity a) {
-        activeActivity = a;
-    }
-
     public static void activityPaused() {
         activityCounter -= 1;
     }
 
-    public static void activityResumed() {
+    public static void activityResumed(Activity a) {
         activityCounter += 1;
+        activeActivity = a;
     }
 
     public static boolean isActive() {
