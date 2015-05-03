@@ -33,17 +33,11 @@ import java.util.Date;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends BaseActivity {
-    private String username;
-    private String userFullname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
-        Intent intent = getIntent();
-        username = intent.getStringExtra("username");
-        userFullname = intent.getStringExtra("fullname");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -52,7 +46,6 @@ public class SettingsActivity extends BaseActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         GeneralPreferenceFragment preferenceFragment = (GeneralPreferenceFragment) getFragmentManager().findFragmentById(R.id.preference_fragment);
-        preferenceFragment.setUser(username, userFullname);
     }
 
     @Override
@@ -226,12 +219,6 @@ public class SettingsActivity extends BaseActivity {
             if (lastUpdateTimestamp != 0) {
                 lastUpdatePreference.setSummary(new Date(lastUpdateTimestamp).toString());
             }
-        }
-
-        public void setUser(String name, String fullname) {
-            Preference username = (Preference) findPreference("username");
-            username.setTitle(fullname);
-            username.setSummary(name);
         }
     }
 }
