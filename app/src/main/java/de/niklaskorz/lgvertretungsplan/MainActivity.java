@@ -44,9 +44,6 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setHomeButtonEnabled(true);
-
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -179,4 +176,5 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
     public void onBackPressed() {
         super.onBackPressed();
     }
+    
 }
