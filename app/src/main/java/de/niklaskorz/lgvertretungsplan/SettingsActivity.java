@@ -3,6 +3,7 @@ package de.niklaskorz.lgvertretungsplan;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -198,6 +199,17 @@ public class SettingsActivity extends BaseActivity {
                     return true;
                 }
             });
+
+            Preference usernamePreference = (Preference) findPreference("username");
+            SharedPreferences settings = getPreferenceManager().getSharedPreferences();
+            String username = settings.getString("username", null);
+            String userFullname = settings.getString("user_fullname", null);
+            if (username != null && userFullname != null) {
+                usernamePreference.setTitle(username);
+                usernamePreference.setSummary(userFullname);
+            } else {
+                getPreferenceScreen().removePreference(usernamePreference);
+            }
         }
 
         private void updateLastUpdateSearch() {

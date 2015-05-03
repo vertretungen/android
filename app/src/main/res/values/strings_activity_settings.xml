@@ -55,4 +55,10 @@
     <string name="update_dialog_text">Ein neues Update ist verfügbar und kann jetzt heruntergeladen werden.\nÄnderungen:</string>
 
     <string name="snack_version_copied">Versionsnummer wurde kopiert</string>
+
+    <string name="about_app">Über die App</string>
+    <string name="developer_label">Entwickler</string>
+    <string name="developer">Niklas Korz</string>
+    <string name="license_label">Lizenz</string>
+    <string name="license">BSD 2-clause</string>
 </resources>

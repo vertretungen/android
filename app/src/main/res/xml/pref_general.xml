@@ -48,6 +48,20 @@
             android:key="last_update"
             android:title="Letzte Aktualisierung"/>
 
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/about_app">
+
+        <Preference
+            android:title="@string/developer_label"
+            android:summary="@string/developer"/>
+
+        <Preference
+            android:title="@string/license_label"
+            android:summary="@string/license"/>
+
         <Preference
             android:key="version"
             android:title="Version"/>

@@ -40,8 +40,6 @@ public class LoginManager implements View.OnClickListener, PlanClient.ResponseHa
     private PlanClient.Type planType;
     private boolean loginInProgress = false;
 
-    private String userFullname = "";
-
     public static class LoginInProgressException extends Exception {}
 
     public LoginManager(Context c, PlanClient p) {
@@ -55,7 +53,7 @@ public class LoginManager implements View.OnClickListener, PlanClient.ResponseHa
     }
 
     public String getUserFullname() {
-        return userFullname;
+        return settings.getString("user_fullname", "");
     }
 
     public void login(PlanClient.Type t, PlanClient.ResponseHandler rh) {
@@ -81,10 +79,10 @@ public class LoginManager implements View.OnClickListener, PlanClient.ResponseHa
     public void logout() {
         planClient.setLoginCredentials(null, null);
         SharedPreferences.Editor settingsEditor = settings.edit();
+        settingsEditor.remove("user_fullname");
         settingsEditor.remove("username");
         settingsEditor.remove("password");
         settingsEditor.apply();
-        userFullname = "";
     }
 
     private void showDialog() {
@@ -164,7 +162,11 @@ public class LoginManager implements View.OnClickListener, PlanClient.ResponseHa
     public void onSuccess(Plan p) {
         closeDialog();
         loginInProgress = false;
-        userFullname = p.userFullname;
+
+        SharedPreferences.Editor settingsEditor = settings.edit();
+        settingsEditor.putString("user_fullname", p.userFullname);
+        settingsEditor.apply();
+
         responseHandler.onSuccess(p);
     }
 
