@@ -23,6 +23,7 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -45,6 +46,7 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
         setContentView(R.layout.activity_main);
 
         checkVersionChange();
+        checkUpdates();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -104,6 +106,16 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
                 ex.printStackTrace();
             }
             editor.apply();
+        }
+    }
+
+    private void checkUpdates() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        long lastUpdateSearch = settings.getLong("last_update_search", 0);
+        long now = new Date().getTime();
+
+        if (now - lastUpdateSearch > 2 * 24 * 60 * 60 * 1000) {
+            VersionManager.getInstance().check(this, null);
         }
     }
 
