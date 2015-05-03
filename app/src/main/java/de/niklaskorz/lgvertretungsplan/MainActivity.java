@@ -18,6 +18,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -54,6 +55,10 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
         swipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.green, R.color.blue);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.addItemDecoration(
+                new HorizontalDividerItemDecoration.Builder(this)
+                        .marginResId(R.dimen.horizontal_divider_left_margin, R.dimen.horizontal_divider_right_margin)
+                        .build());
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);

@@ -11,7 +11,7 @@
     <string name="label_substituteSubject">Fach:</string>
     <string name="label_room">Raum:</string>
     <string name="label_replaces">Statt:</string>
-    <string name="label_text">Vertretungs-Text:</string>
+    <string name="label_text">Text:</string>
     <string name="text_info">Keine weiteren Informationen verfügbar</string>
 
     <string name="error_login">Login Fehlgeschlagen (Nutzernamen und Passwort überprüfen)</string>

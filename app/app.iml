@@ -114,6 +114,7 @@
     <orderEntry type="library" exported="" name="material-dialogs-0.7.2.4" level="project" />
     <orderEntry type="library" exported="" name="play-services-appstate-7.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-identity-7.0.0" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-flexibledivider-1.2.4" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-7.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-7.0.0" level="project" />
   </component>

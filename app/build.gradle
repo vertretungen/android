@@ -71,6 +71,7 @@ android {
 }
 
 repositories {
+    jcenter()
     maven {
         url 'https://dl.bintray.com/drummer-aidan/maven'
     }
@@ -88,4 +89,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.0.0'
     compile 'com.afollestad:material-dialogs:0.7.2.4'
     compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.yqritc:recyclerview-flexibledivider:1.2.4'
 }

@@ -75,9 +75,9 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
             timeView.setText(e.hours);
             classesView.setText(e.classes);
             if (e.hours.length() > 1) {
-                timeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                timeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             } else {
-                timeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                timeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
             }
 
             // Detail
