@@ -255,6 +255,7 @@ MERGED from com.android.support:support-v4:22.0.0:20:5
 MERGED from com.android.support:recyclerview-v7:22.0.0:20:5
 MERGED from com.android.support:support-v4:22.0.0:20:5
 MERGED from com.android.support:support-v4:22.0.0:20:5
+MERGED from com.yqritc:recyclerview-flexibledivider:1.2.4:8:5
 	android:targetSdkVersion
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0
