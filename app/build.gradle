@@ -20,7 +20,7 @@ class Version {
     }
 
     int toInteger() {
-        major.toInteger() * 100000 + minor.toInteger() * 10000 +  patch.toInteger() * 1000 +  buildNumber.toInteger()
+        major.toInteger() * 100000 + minor.toInteger() * 10000 + patch.toInteger() * 1000 + buildNumber.toInteger()
     }
 
     void writeVersion(File file) {
@@ -39,13 +39,14 @@ class Version {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "de.niklaskorz.lgvertretungsplan"
         minSdkVersion 16
-        targetSdkVersion 21
+        targetSdkVersion 23
 
         def version = new Version(rootDir)
         versionName version.toString()
@@ -73,21 +74,35 @@ android {
 repositories {
     jcenter()
     maven {
-        url 'https://dl.bintray.com/drummer-aidan/maven'
+        url 'https://jitpack.io'
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile('com.afollestad.material-dialogs:core:0.8.3.0@aar') {
+        transitive = true
+    }
+    compile('com.afollestad.material-dialogs:commons:0.8.3.0@aar') {
+        transitive = true
+    }
+    compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.nispok:snackbar:2.10.6'
     compile 'org.jsoup:jsoup:1.8.2'
     compile 'com.loopj.android:android-async-http:1.4.5'
-    compile 'com.android.support:recyclerview-v7:22.0.0'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.jakewharton:butterknife:6.1.0'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.google.android.gms:play-services:7.0.0'
-    compile 'com.afollestad:material-dialogs:0.7.8.1'
-    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:support-v4:23.0.1'
     compile 'com.yqritc:recyclerview-flexibledivider:1.2.4'
 }
+
+
+
+
+
+
+
+
+
+
