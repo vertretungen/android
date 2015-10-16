@@ -1,7 +1,5 @@
 package de.niklaskorz.lgvertretungsplan;
 
-import android.app.ActivityManager;
-import android.app.Application;
 import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -21,21 +19,13 @@ import android.support.v4.app.NotificationCompat;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.BaseJsonHttpResponseHandler;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.apache.http.Header;
-import org.json.JSONArray;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by niklaskorz on 01.05.15.
@@ -207,28 +197,26 @@ public class VersionManager {
         final Notification notification = builder.build();
         notificationManager.notify(NotificationIds.UPDATE_AVAILABLE_OR_INSTALLABLE, notification);
 
-        if (true) {
-            final Context activeContext = AppState.getActiveActivity();
-            new MaterialDialog.Builder(activeContext)
-                    .title(R.string.app_name)
-                    .content(R.string.update_loaded)
-                    .cancelable(false)
-                    .positiveText(R.string.install_update)
-                    .negativeText(R.string.postpone_update)
-                    .callback(new MaterialDialog.ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            super.onPositive(dialog);
-                            activeContext.startActivity(installerIntent);
-                        }
+        final Context activeContext = AppState.getActiveActivity();
+        new MaterialDialog.Builder(activeContext)
+                .title(R.string.app_name)
+                .content(R.string.update_loaded)
+                .cancelable(false)
+                .positiveText(R.string.install_update)
+                .negativeText(R.string.postpone_update)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        activeContext.startActivity(installerIntent);
+                    }
 
-                        @Override
-                        public void onNegative(MaterialDialog dialog) {
-                            super.onNegative(dialog);
-                            notificationManager.notify(NotificationIds.UPDATE_AVAILABLE_OR_INSTALLABLE, notification);
-                        }
-                    })
-                    .show();
-        }
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                        notificationManager.notify(NotificationIds.UPDATE_AVAILABLE_OR_INSTALLABLE, notification);
+                    }
+                })
+                .show();
     }
 }

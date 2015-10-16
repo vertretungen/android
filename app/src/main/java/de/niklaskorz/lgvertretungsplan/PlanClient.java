@@ -6,13 +6,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
-
-import org.apache.http.Header;
-import org.apache.http.impl.cookie.BasicClientCookie;
-
-import java.io.UnsupportedEncodingException;
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by niklaskorz on 16.04.15.
