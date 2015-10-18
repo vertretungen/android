@@ -59,6 +59,7 @@
             android:summary="@string/developer"/>
 
         <Preference
+            android:key="license"
             android:title="@string/license_label"
             android:summary="@string/license"/>
 

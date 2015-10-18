@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -163,6 +164,16 @@ public class SettingsActivity extends BaseActivity {
             } catch (PackageManager.NameNotFoundException ex) {
                 ex.printStackTrace();
             }
+
+            Preference licensePref = (Preference) findPreference("license");
+            licensePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://raw.githubusercontent.com/niklaskorz/LGVertretungsplan/master/LICENSE"));
+                    startActivity(browserIntent);
+                    return true;
+                }
+            });
 
             searchUpdatesPreference = findPreference("search_updates");
             searchUpdatesPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
