@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LG Vertretungsplan</string>
+    <string name="app_name">Vertretungen</string>
 
     <string name="action_day">Tag</string>
     <string name="action_today">Heute</string>
