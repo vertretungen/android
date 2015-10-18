@@ -11,15 +11,15 @@ import org.jsoup.select.Elements;
  * Created by niklaskorz on 15.04.15.
  */
 public class PlanEntry {
-    String classes; // Klasse(n)
-    String hours; // Std.
-    String subject; // (Fach)
-    String substituteTeacher; // Vertreter
-    String substituteSubject; // Fach
-    String room; // Raum
-    String type; // Art
-    String text; // Vertretungs-Text
-    String replaces; // Statt
+    String classes = ""; // Klasse(n)
+    String hours = ""; // Std.
+    String subject = ""; // (Fach)
+    String substituteTeacher = ""; // Vertreter
+    String substituteSubject = ""; // Fach
+    String room = ""; // Raum
+    String type = ""; // Art
+    String text = ""; // Vertretungs-Text
+    String replaces = ""; // Statt
 
     public PlanEntry(Element element) throws Plan.ParserException{
         Elements columns = element.select("td");
@@ -35,6 +35,10 @@ public class PlanEntry {
         type = PlanEntry.trim(columns.get(6).text());
         text = PlanEntry.trim(columns.get(7).text());
         replaces = PlanEntry.trim(columns.get(8).text());
+    }
+
+    public PlanEntry() {
+
     }
 
     public static String trim(String s) {

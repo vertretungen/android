@@ -1,5 +1,6 @@
 package de.niklaskorz.lgvertretungsplan;
 
+import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +22,7 @@ import butterknife.OnClick;
 public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> implements View.OnClickListener {
     Plan plan;
     ArrayList<PlanEntry> entries;
+    Context ctx;
     LinearLayoutManager layoutManager;
     int expandedPosition = -1;
 
@@ -144,7 +146,8 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
         }
     }
 
-    public PlanAdapter(LinearLayoutManager lm, Plan p, String filterClass) {
+    public PlanAdapter(Context context, LinearLayoutManager lm, Plan p, String filterClass) {
+        ctx = context;
         layoutManager = lm;
         plan = p;
         setClassFilter(filterClass);
@@ -202,6 +205,13 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
                     entries.add(entry);
                 }
             }
+        }
+
+        if (entries.isEmpty()) {
+            PlanEntry dummy = new PlanEntry();
+            dummy.subject = ctx.getString(R.string.text_no_entries);
+            dummy.type = ctx.getString(R.string.text_no_entries_sub);
+            entries.add(dummy);
         }
 
         notifyDataSetChanged();

@@ -128,7 +128,7 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
     @Override
     public void onSuccess(Plan p) {
         swipeRefreshLayout.setRefreshing(false);
-        adapter = new PlanAdapter(layoutManager, p, selectedClass);
+        adapter = new PlanAdapter(this, layoutManager, p, selectedClass);
         recyclerView.setAdapter(adapter);
         SnackbarManager.show(Snackbar
                 .with(this)
