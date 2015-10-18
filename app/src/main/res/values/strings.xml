@@ -16,6 +16,8 @@
     <string name="label_replaces">Statt:</string>
     <string name="label_text">Text:</string>
     <string name="text_info">Keine weiteren Informationen verfügbar</string>
+    <string name="text_no_entries">Keine Vertretungen</string>
+    <string name="text_no_entries_sub">Für deine Klasse wurden keine Vertretungen gefunden</string>
 
     <string name="error_login">Login Fehlgeschlagen (Nutzernamen und Passwort überprüfen)</string>
     <string name="title_activity_update">UpdateActivity</string>
