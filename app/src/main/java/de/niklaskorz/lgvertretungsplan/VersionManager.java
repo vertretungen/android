@@ -18,6 +18,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.flurry.android.FlurryAgent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -27,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by niklaskorz on 01.05.15.
@@ -98,6 +101,10 @@ public class VersionManager {
                                 return;
                             }
                             showAvailable(c, versionInfo);
+
+                            Map<String, String> eventParams = new HashMap<String, String>();
+                            eventParams.put("Version", Integer.toString(latest));
+                            FlurryAgent.logEvent("Update_received", eventParams);
 
                             if (ch != null) {
                                 ch.complete(true);
