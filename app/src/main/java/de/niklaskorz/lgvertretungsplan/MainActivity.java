@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.flurry.android.FlurryAgent;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
@@ -24,7 +25,9 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends BaseActivity implements PlanClient.ResponseHandler {
@@ -96,6 +99,10 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
         int lastVersion = settings.getInt("version_code", 0);
 
         if (lastVersion != currentVersion) {
+            Map<String, String> eventParams = new HashMap<String, String>();
+            eventParams.put("Version", Integer.toString(currentVersion));
+            FlurryAgent.logEvent("Update_installed", eventParams);
+
             SharedPreferences.Editor editor = settings.edit();
             editor.putInt("version_code", currentVersion);
             try {
@@ -104,6 +111,7 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
                 editor.putLong("last_update", appFile.lastModified());
             } catch (PackageManager.NameNotFoundException ex) {
                 ex.printStackTrace();
+                FlurryAgent.onError("WRITE_VERSION_FAILED", ex.getLocalizedMessage(), ex);
             }
             editor.apply();
         }
