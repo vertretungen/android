@@ -210,6 +210,10 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
                             if (adapter != null) {
                                 adapter.setClassFilter(selectedClass);
                             }
+
+                            Map<String, String> eventParams = new HashMap<String, String>();
+                            eventParams.put("Class", selectedClass);
+                            FlurryAgent.logEvent("Class_select", eventParams);
                         }
                     })
                     .show();

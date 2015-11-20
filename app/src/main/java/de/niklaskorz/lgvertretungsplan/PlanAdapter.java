@@ -10,7 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -196,6 +200,10 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
     }
 
     public void setClassFilter(String filterClass) {
+        Map<String, String> eventParams = new HashMap<String, String>();
+        eventParams.put("Class", filterClass);
+        FlurryAgent.logEvent("Plan_filter", eventParams);
+
         if (filterClass.equals("0")) {
             entries = plan.entries;
         } else {

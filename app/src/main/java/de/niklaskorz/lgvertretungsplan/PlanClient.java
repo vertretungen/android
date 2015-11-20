@@ -55,12 +55,14 @@ public class PlanClient {
         cookieStore.clear();
         username = u;
         password = p;
+
+        FlurryAgent.setUserId(u);
     }
 
     public void get(final Type type, final ResponseHandler rh) {
         Map<String, String> eventParams = new HashMap<String, String>();
         eventParams.put("Type", type.name());
-        FlurryAgent.logEvent("Plan_get", eventParams);
+        FlurryAgent.logEvent("Plan_load", eventParams);
 
         AsyncHttpResponseHandler responseHandler = new AsyncHttpResponseHandler() {
             @Override
