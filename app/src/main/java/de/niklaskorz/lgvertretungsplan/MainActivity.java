@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,11 +17,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.flurry.android.FlurryAgent;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import org.piwik.sdk.Tracker;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -47,6 +49,8 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Application.get().getTracker().trackScreenView("/main");
 
         checkVersionChange();
         checkUpdates();
@@ -88,8 +92,11 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
 
     private void checkVersionChange() {
         int currentVersion = 0;
+        String versionName = "";
         try {
-            currentVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            currentVersion = packageInfo.versionCode;
+            versionName = packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException ex) {
             ex.printStackTrace();
             finish();
@@ -99,9 +106,7 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
         int lastVersion = settings.getInt("version_code", 0);
 
         if (lastVersion != currentVersion) {
-            Map<String, String> eventParams = new HashMap<String, String>();
-            eventParams.put("Version", Integer.toString(currentVersion));
-            FlurryAgent.logEvent("Update_installed", eventParams);
+            Application.get().getTracker().trackEvent("update", "installed", versionName, currentVersion);
 
             SharedPreferences.Editor editor = settings.edit();
             editor.putInt("version_code", currentVersion);
@@ -111,7 +116,7 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
                 editor.putLong("last_update", appFile.lastModified());
             } catch (PackageManager.NameNotFoundException ex) {
                 ex.printStackTrace();
-                FlurryAgent.onError("WRITE_VERSION_FAILED", ex.getLocalizedMessage(), ex);
+                Application.get().getTracker().trackException(ex, ex.getMessage(), false);
             }
             editor.apply();
         }
@@ -211,9 +216,7 @@ public class MainActivity extends BaseActivity implements PlanClient.ResponseHan
                                 adapter.setClassFilter(selectedClass);
                             }
 
-                            Map<String, String> eventParams = new HashMap<String, String>();
-                            eventParams.put("Class", selectedClass);
-                            FlurryAgent.logEvent("Class_select", eventParams);
+                            Application.get().getTracker().trackEvent("class", "select", selectedClass);
                         }
                     })
                     .show();

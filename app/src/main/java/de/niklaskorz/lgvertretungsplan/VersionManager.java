@@ -18,7 +18,6 @@ import android.support.v4.app.NotificationCompat;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.flurry.android.FlurryAgent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -26,6 +25,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.piwik.sdk.Tracker;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -102,9 +102,8 @@ public class VersionManager {
                             }
                             showAvailable(c, versionInfo);
 
-                            Map<String, String> eventParams = new HashMap<String, String>();
-                            eventParams.put("Version", Integer.toString(latest));
-                            FlurryAgent.logEvent("Update_received", eventParams);
+
+                            Application.get().getTracker().trackEvent("update", "received", versionInfo.name, versionInfo.code);
 
                             if (ch != null) {
                                 ch.complete(true);

@@ -1,15 +1,12 @@
 package de.niklaskorz.lgvertretungsplan;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.flurry.android.FlurryAgent;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -56,13 +53,11 @@ public class PlanClient {
         username = u;
         password = p;
 
-        FlurryAgent.setUserId(u);
+        Application.get().getTracker().setUserId(u);
     }
 
     public void get(final Type type, final ResponseHandler rh) {
-        Map<String, String> eventParams = new HashMap<String, String>();
-        eventParams.put("Type", type.name());
-        FlurryAgent.logEvent("Plan_load", eventParams);
+        Application.get().getTracker().trackEvent("plan", "load", type.name());
 
         AsyncHttpResponseHandler responseHandler = new AsyncHttpResponseHandler() {
             @Override
@@ -70,12 +65,11 @@ public class PlanClient {
                 try {
                     rh.onSuccess(new Plan(new String(responseBody, "UTF-8")));
 
-                    Map<String, String> eventParams = new HashMap<String, String>();
-                    eventParams.put("Type", type.name());
-                    FlurryAgent.logEvent("Plan_loaded", eventParams);
+                    Application.get().getTracker().trackEvent("plan", "loaded", type.name());
                 } catch (Throwable error) {
                     rh.onFailure(error);
-                    FlurryAgent.onError("PLAN_GET_FAILED", error.getLocalizedMessage(), error);
+
+                    Application.get().getTracker().trackException(error, error.getMessage(), false);
                 }
             }
 

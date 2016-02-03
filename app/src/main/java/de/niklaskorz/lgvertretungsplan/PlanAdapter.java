@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.flurry.android.FlurryAgent;
+import org.piwik.sdk.Tracker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -200,9 +200,7 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> im
     }
 
     public void setClassFilter(String filterClass) {
-        Map<String, String> eventParams = new HashMap<String, String>();
-        eventParams.put("Class", filterClass);
-        FlurryAgent.logEvent("Plan_filter", eventParams);
+        Application.get().getTracker().trackEvent("plan", "filter", filterClass);
 
         if (filterClass.equals("0")) {
             entries = plan.entries;

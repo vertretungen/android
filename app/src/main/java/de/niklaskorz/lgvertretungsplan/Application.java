@@ -1,18 +1,38 @@
 package de.niklaskorz.lgvertretungsplan;
 
-import com.flurry.android.FlurryAgent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
+import org.piwik.sdk.PiwikApplication;
+import org.piwik.sdk.Tracker;
 
 /**
  * Created by niklaskorz on 08.11.2015.
  */
-public class Application extends android.app.Application {
-    final String FLURRY_API_KEY = "";
+public class Application extends PiwikApplication {
+    private static Application instance;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
 
-        FlurryAgent.setLogEnabled(true);
-        FlurryAgent.init(this, FLURRY_API_KEY);
+        getPiwik().setDebug(BuildConfig.DEBUG);
+        getPiwik().setDryRun(BuildConfig.DEBUG);
+        getTracker().trackAppDownload();
+    }
+
+    public static Application get() {
+        return instance;
+    }
+
+    @Override
+    public String getTrackerUrl() {
+        return "http://dev.niklaskorz.de/lgv/piwik/piwik.php";
+    }
+
+    @Override
+    public Integer getSiteId() {
+        return 1;
     }
 }
